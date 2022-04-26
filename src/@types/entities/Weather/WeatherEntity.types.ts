@@ -50,3 +50,11 @@ export interface IWeather {
   name: string
   cod: number
 }
+
+export interface IWeatherRequest {
+  appid: string
+  lat: number
+  lon: number
+  lang?: string
+  units?: string
+}

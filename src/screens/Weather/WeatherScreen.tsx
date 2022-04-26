@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Text } from 'react-native'
 
 import * as Location from 'expo-location'
 import { useDispatch, useSelector } from 'react-redux'
-import { api } from '@/services/api'
+
 import ButtonComponent from '@/components/Button/ButtonComponent'
 import {
   Container,
@@ -16,12 +16,17 @@ import {
   ButtonView,
 } from '@/screens/Weather/WeatherScreen.styles'
 import { weatherRequest } from '@/store/Weather/WeatherCreators'
-import { IWeather } from '@/@types/entities/Weather/WeatherEntity.types'
+import {
+  IWeather,
+  IWeatherRequest,
+} from '@/@types/entities/Weather/WeatherEntity.types'
 import { selectWeather } from '@/store/Weather/WeatherSelectors'
+import { ILocation } from '@/@types/entities/Location/LocationEntity.types'
+import { EActionTypeStatus } from '@/@types/application/ActionStatus/ActionStatusApplication.types'
 
 const WeatherScreen = () => {
   const dispatch = useDispatch()
-  const [locationUser, setLocationUser] = useState<Location.LocationObject>()
+  const [locationUser, setLocationUser] = useState<ILocation>()
   const [userLocationStatus, setUserLocationStatus] = useState(
     'Obtendo sua localização...',
   )
@@ -29,10 +34,20 @@ const WeatherScreen = () => {
   const [weather, setWeather] = useState<IWeather>()
 
   const weatherSelect = useSelector(selectWeather)
-  console.log(weatherSelect.weather)
-  // console.log('weather object')
-  // console.log(weatherGetStatus)
-  // console.log(weather)
+
+  const getWeather = useCallback(() => {
+    if (locationUser) {
+      const _weatherRequest: IWeatherRequest = {
+        appid: '82fd53f9cad485bfd1ac43f053003fb3',
+        lat: locationUser.coords.latitude,
+        lon: locationUser.coords.longitude,
+        lang: 'pt_br',
+        units: 'metric',
+      }
+
+      dispatch(weatherRequest(_weatherRequest))
+    }
+  }, [dispatch, locationUser])
 
   useEffect(() => {
     ;(async () => {
@@ -42,8 +57,7 @@ const WeatherScreen = () => {
         return
       }
 
-      const location: Location.LocationObject =
-        await Location.getCurrentPositionAsync({})
+      const location: ILocation = await Location.getCurrentPositionAsync({})
 
       setLocationUser(location)
       setUserLocationStatus('Localização obtida com sucesso.')
@@ -52,19 +66,7 @@ const WeatherScreen = () => {
 
   useEffect(() => {
     if (locationUser) {
-      dispatch(weatherRequest())
-
-      return
-      // const appid = '82fd53f9cad485bfd1ac43f053003fb3'
-      // const lat = locationUser.coords.latitude
-      // const lon = locationUser.coords.longitude
-      // const lang = 'pt_br'
-      // const units = 'metric'
-      // const queryString = `?lat=${lat}&lon=${lon}&lang=${lang}&units=${units}&appid=${appid}`
-
-      // api.get(queryString).then(function (response) {
-      //   setWeather(response.data)
-      // })
+      getWeather()
     }
   }, [locationUser])
 
@@ -110,7 +112,10 @@ const WeatherScreen = () => {
         <ButtonView>
           <ButtonComponent
             title="Atualizar"
-            onPress={() => dispatch(weatherRequest())}
+            onPress={() => getWeather()}
+            loading={
+              weatherSelect.weatherGetStatus.status === EActionTypeStatus.Busy
+            }
           />
         </ButtonView>
       )}

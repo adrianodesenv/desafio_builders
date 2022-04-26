@@ -12,6 +12,7 @@ import { ServiceConfig } from '@/services/ServiceConfig'
 const PERSIST_CONFIG = {
   key: 'root',
   storage: AsyncStorage,
+  blacklist: ['weatherReducer'],
 }
 
 const ReducerConfig = combineReducers({
@@ -25,16 +26,16 @@ const RootReducer = (state: any, action: Action) => {
 }
 
 export const SagaMiddleware = createSagaMiddleware()
-const middlewares = [SagaMiddleware]
+const middleware = [SagaMiddleware]
 
 if (__DEV__ && !process.env.JEST_WORKER_ID) {
   const createDebugger = require('redux-flipper').default
-  middlewares.push(createDebugger())
+  middleware.push(createDebugger())
 }
 
 const store = configureStore({
   reducer: RootReducer,
-  middleware: middlewares,
+  middleware,
 })
 
 const service = new ServiceConfig()

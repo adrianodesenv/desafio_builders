@@ -50,7 +50,11 @@ export const WeatherTemperatureText = styled.Text`
 
 export const ButtonView = styled.View`
   flex: 1;
+  align-items: center;
   justify-content: flex-end;
 
-  margin: 32px;
+  padding: 0 20px;
+  margin: 0 0 44px 0;
+
+  width: 100%;
 `

@@ -12,7 +12,10 @@ import {
   IActionStatus,
 } from '@/@types/application/ActionStatus/ActionStatusApplication.types'
 
-import { IWeather } from '@/@types/entities/Weather/WeatherEntity.types'
+import {
+  IWeather,
+  IWeatherRequest,
+} from '@/@types/entities/Weather/WeatherEntity.types'
 
 export const WEATHER_INITIAL_STATE: IWeatherState = {
   weather: null,
@@ -61,8 +64,9 @@ const WeatherReducer: Reducer<IWeatherState> = (
 
 export default WeatherReducer
 
-export const weatherRequest = () => ({
+export const weatherRequest = (weatherRequest: IWeatherRequest) => ({
   type: EWeatherActionTypes.WEATHER_REQUEST,
+  payload: { weatherRequest },
 })
 
 export const weatherRequestStatus = (weatherRequestStatus: IActionStatus) => ({

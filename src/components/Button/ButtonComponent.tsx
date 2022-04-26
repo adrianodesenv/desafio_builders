@@ -1,7 +1,11 @@
 import React from 'react'
 import { GestureResponderEvent, ActivityIndicator } from 'react-native'
 
-import { Button, View, Text } from '@/components/Button/ButtonComponent.styles'
+import {
+  ButtonView,
+  Button,
+  Text,
+} from '@/components/Button/ButtonComponent.styles'
 
 interface IButtonComponentProps {
   title: string
@@ -17,13 +21,11 @@ const ButtonComponent: React.FC<IButtonComponentProps> = ({
   loading,
 }) => {
   return (
-    <Button onPress={onPress} disabled={disabled}>
-      <View>
-        {!loading && <Text>{title}</Text>}
-
-        {loading && <ActivityIndicator color="#fff" />}
-      </View>
-    </Button>
+    <ButtonView>
+      <Button onPress={onPress} disabled={disabled}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text>{title}</Text>}
+      </Button>
+    </ButtonView>
   )
 }
 
